@@ -23,4 +23,30 @@ router.patch("/:id/availability", async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+router.post("/", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("doctors").insert(req.body).select().single();
+    if (error) throw error;
+    return res.status(201).json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.patch("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { data, error } = await supabase.from("doctors").update(req.body).eq("id", id).select().single();
+    if (error) throw error;
+    return res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { error } = await supabase.from("doctors").delete().eq("id", id);
+    if (error) throw error;
+    return res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 export default router;
