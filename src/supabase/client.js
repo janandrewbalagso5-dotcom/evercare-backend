@@ -1,11 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-const isConfigured = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
+const isConfigured = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY;
 
 export const isMock = !isConfigured;
 
 export const supabase = isConfigured
-    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY)
+    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
     : null;
 
 if (isConfigured) {
