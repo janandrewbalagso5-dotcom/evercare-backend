@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
   res.json({
     status: "ok",
     service: "EverCare API",
-    mode: isMock ? "mock" : "firebase",
+    mode: isMock ? "mock" : "supabase",
     timestamp: new Date().toISOString(),
   });
 });
