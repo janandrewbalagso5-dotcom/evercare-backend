@@ -38,7 +38,9 @@ router.post("/", async (req, res) => {
       two_factor_enabled: false,
       two_factor_secret: Math.floor(100000 + Math.random() * 900000).toString(),
       ...userData,
+      blood_type: userData.bloodType,
     };
+    delete newUser.bloodType;
     const { data, error } = await supabase.from("users").insert(newUser).select().single();
     if (error) throw error;
     return res.status(201).json(data);
