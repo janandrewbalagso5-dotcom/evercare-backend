@@ -3,6 +3,14 @@ import { supabase } from "../supabase/client.js";
 
 const router = Router();
 
+const toSnakeCase = (obj) =>
+  Object.fromEntries(
+    Object.entries(obj).map(([k, v]) => [
+      k.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`),
+      v ?? null,
+    ])
+  );
+
 router.get("/", async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -13,16 +21,15 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const appointmentData = req.body;
-  const newApt = {
+  const newApt = toSnakeCase({
     id: "apt_" + Date.now(),
     status: "Pending",
-    payment_status: "Unpaid",
+    paymentStatus: "Unpaid",
     prescription: "",
     notes: "",
-    updated_at: new Date().toISOString(),
-    ...appointmentData,
-  };
+    updatedAt: new Date().toISOString(),
+    ...req.body,
+  });
   try {
     const { data, error } = await supabase.from("appointments").insert(newApt).select().single();
     if (error) throw error;
@@ -32,10 +39,11 @@ router.post("/", async (req, res) => {
 
 router.patch("/:id", async (req, res) => {
   const { id } = req.params;
+  const updates = toSnakeCase({ ...req.body, updatedAt: new Date().toISOString() });
   try {
     const { data, error } = await supabase
       .from("appointments")
-      .update({ ...req.body, updated_at: new Date().toISOString() })
+      .update(updates)
       .eq("id", id).select().single();
     if (error) throw error;
     return res.json(data);
