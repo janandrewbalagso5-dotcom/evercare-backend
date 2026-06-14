@@ -11,12 +11,20 @@ const toSnakeCase = (obj) =>
     ])
   );
 
+const toCamelCase = (obj) =>
+  Object.fromEntries(
+    Object.entries(obj).map(([k, v]) => [
+      k.replace(/_([a-z])/g, (_, c) => c.toUpperCase()),
+      v,
+    ])
+  );
+
 router.get("/", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("appointments").select("*").order("date", { ascending: true });
     if (error) throw error;
-    return res.json(data);
+    return res.json(data.map(toCamelCase));
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -33,7 +41,7 @@ router.post("/", async (req, res) => {
   try {
     const { data, error } = await supabase.from("appointments").insert(newApt).select().single();
     if (error) throw error;
-    return res.status(201).json(data);
+    return res.status(201).json(toCamelCase(data));
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -46,7 +54,7 @@ router.patch("/:id", async (req, res) => {
       .update(updates)
       .eq("id", id).select().single();
     if (error) throw error;
-    return res.json(data);
+    return res.json(toCamelCase(data));
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

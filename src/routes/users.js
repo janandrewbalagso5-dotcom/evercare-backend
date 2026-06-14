@@ -3,6 +3,14 @@ import { supabase } from "../supabase/client.js";
 
 const router = Router();
 
+const toCamelCase = (obj) =>
+  Object.fromEntries(
+    Object.entries(obj).map(([k, v]) => [
+      k.replace(/_([a-z])/g, (_, c) => c.toUpperCase()),
+      v,
+    ])
+  );
+
 router.get("/", async (req, res) => {
   const { email } = req.query;
   if (!email) return res.status(400).json({ error: "email query param required" });
@@ -11,7 +19,7 @@ router.get("/", async (req, res) => {
       .from("users").select("*")
       .ilike("email", email).maybeSingle();
     if (error) throw error;
-    return res.json(data || null);
+    return res.json(data ? toCamelCase(data) : null);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
