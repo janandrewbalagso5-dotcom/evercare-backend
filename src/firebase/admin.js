@@ -1,36 +1,26 @@
-import admin from "firebase-admin";
+import { createClient } from "@supabase/supabase-js";
 
 const isConfigured =
-  process.env.FIREBASE_PROJECT_ID &&
-  process.env.FIREBASE_CLIENT_EMAIL &&
-  process.env.FIREBASE_PRIVATE_KEY;
+  process.env.SUPABASE_URL &&
+  process.env.SUPABASE_ANON_KEY;
 
 let db = null;
-let storage = null;
 let isMock = true;
 
 if (isConfigured) {
   try {
-    if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-        }),
-        storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`,
-      });
-    }
-    db = admin.firestore();
-    storage = admin.storage();
+    db = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_ANON_KEY
+    );
     isMock = false;
-    console.log("EverCare Backend: Firebase Admin initialized successfully.");
+    console.log("EverCare Backend: Supabase client initialized successfully.");
   } catch (error) {
-    console.error("EverCare Backend: Firebase Admin init failed, using mock data.", error.message);
+    console.error("EverCare Backend: Supabase init failed, using mock data.", error.message);
     isMock = true;
   }
 } else {
-  console.log("EverCare Backend: No Firebase config found. Running in mock mode.");
+  console.log("EverCare Backend: No Supabase config found. Running in mock mode.");
 }
 
-export { db, storage, isMock };
+export { db, isMock };

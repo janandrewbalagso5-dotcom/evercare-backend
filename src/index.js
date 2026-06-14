@@ -5,8 +5,7 @@ import doctorsRouter from "./routes/doctors.js";
 import appointmentsRouter from "./routes/appointments.js";
 import transactionsRouter from "./routes/transactions.js";
 import systemRouter from "./routes/system.js";
-import { isMock } from "./firebase/admin.js";
-
+import { isMock } from "./supabase/client.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
